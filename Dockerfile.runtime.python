@@ -1,0 +1,10 @@
+# Python runtime for docker operator
+FROM python:3.10
+
+ENV BASE=/workspace
+WORKDIR ${BASE}
+COPY ./dist ./dist
+RUN pip install --no-cache-dir ./dist/fin_pip-0.1.0.tar.gz \
+    && rm -rf ./dist
+RUN adduser --disabled-password --gecos '' airflow
+USER airflow
