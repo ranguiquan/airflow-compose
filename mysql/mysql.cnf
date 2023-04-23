@@ -1,0 +1,5 @@
+[mysqld]
+innodb-buffer-pool-size=4294967296
+innodb-buffer-pool-instances=4
+innodb-buffer-pool-chunk-size=1073741824
+user=mysql

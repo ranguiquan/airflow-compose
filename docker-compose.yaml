@@ -82,11 +82,11 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/scripts:/opt/airflow/scripts
     # We will pass the Docker Deamon as a volume to allow the webserver containers start docker images. Ref: https://stackoverflow.com/q/51342810/7024760
     # https://github.com/apache/airflow/issues/16803
-    - /var/run/docker.sock:/var/run/docker.sock 
+    - /var/run/docker.sock:/var/run/docker.sock
     # - /tmp:/tmp
     # - ${AIRFLOW_PROJ_DIR:-.}/:/opt/airflow
   networks:
-    - airflow-net
+    - net
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -94,20 +94,19 @@ x-airflow-common:
       condition: service_healthy
     postgres:
       condition: service_healthy
-  extra_hosts: 
+  extra_hosts:
     - "host.docker.internal:host-gateway"
 
 services:
-  test-mysql:
+  mysql:
     image: mysql:debian
-    cpus: 2
     volumes:
-      - test-mysql:/var/lib/mysql
+      - mysql-db-volume:/var/lib/mysql
       - ./mysql:/etc/mysql
     networks:
-      - airflow-net
+      - net
     ports:
-      - '7735:3306'
+      - '3306:3306'
     environment:
       - MYSQL_ROOT_PASSWORD=n5j&MEM27VWF
       - MYSQL_DATABASE=stock
@@ -121,7 +120,7 @@ services:
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     networks:
-      - airflow-net
+      - net
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -134,7 +133,7 @@ services:
     expose:
       - 6379
     networks:
-      - airflow-net
+      - net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -328,7 +327,7 @@ services:
 
 volumes:
   postgres-db-volume:
-  test-mysql:
+  mysql-db-volume:
 
 networks:
-  airflow-net:
+  net:

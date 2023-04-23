@@ -1,0 +1,11 @@
+# Python worker for docker operator
+FROM python:3.10
+
+ENV BASE=/workspace
+WORKDIR ${BASE}
+COPY ./requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt  \
+    && rm -rf requirements.txt \
+    && adduser --disabled-password --gecos '' airflow
+
+USER airflow
